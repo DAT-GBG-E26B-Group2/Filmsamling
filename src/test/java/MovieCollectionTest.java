@@ -2,6 +2,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -183,5 +184,44 @@ public class MovieCollectionTest {
         // Assert
         assertFalse(deleted);
         assertEquals(3, collection.getNumberOfMovies());
+    }
+
+    //Check that movies that hasnt been watched is returned in getMoviesNotWatchedSince
+    @Test
+    void neverWatchedMoviesAreIncluded() {
+        // Arrange
+        LocalDate cutoffDate = LocalDate.of(2025, 10, 26);
+
+        // Act
+        ArrayList<Movie> result =
+                collection.getMoviesNotWatchedSince(cutoffDate);
+
+        // Assert
+        assertEquals(3, result.size());
+    }
+
+    //Check that only movies before cutof(date) are returned
+    @Test
+    void onlyMoviesWatchedBeforeCutoffAreIncluded() {
+        // Arrange
+        ArrayList<Movie> movies = collection.getMovies();
+
+        Movie godfather = movies.get(0);
+        Movie casablanca = movies.get(1);
+        Movie godzilla = movies.get(2);
+
+        godfather.markAsWatched(LocalDate.of(2025, 10, 25));
+        casablanca.markAsWatched(LocalDate.of(2025, 10, 26));
+        godzilla.markAsWatched(LocalDate.of(2025, 10, 27));
+
+        LocalDate cutoffDate = LocalDate.of(2025, 10, 26);
+
+        // Act
+        ArrayList<Movie> result =
+                collection.getMoviesNotWatchedSince(cutoffDate);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(godfather, result.get(0));
     }
 }

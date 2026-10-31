@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 public class MovieCollection {
     private ArrayList<Movie> movies;
@@ -55,5 +56,20 @@ public class MovieCollection {
 
     public boolean deleteMovie(Movie movie) {
         return movies.remove(movie);
+    }
+
+    //Finder og returnere alle film som er slet ikke blevet set eller som er set for lang tid siden (siden date)
+    public ArrayList<Movie> getMoviesNotWatchedSince(LocalDate date) {
+
+        ArrayList<Movie> result = new ArrayList<>();
+
+        for (Movie movie : movies) {
+
+            if (!movie.hasBeenWatched() || movie.getLastWatched().isBefore(date)) {
+                result.add(movie);
+            }
+        }
+
+        return result;
     }
 }
