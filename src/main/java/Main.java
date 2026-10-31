@@ -1,5 +1,7 @@
+import ui.UserInterface;
+
 public class Main {
-    static void main(String[] args) {
+    public static void main(String[] args) {
         UserInterface.StartProgram();
     }
 }

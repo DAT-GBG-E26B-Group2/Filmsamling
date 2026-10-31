@@ -1,3 +1,6 @@
+package datasource;
+
+import domainmodel.Movie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -109,10 +112,10 @@ public class FileHandlerTest {
         output.println("Jaws;Steven Spielberg;1975;true;124;Thriller;");
 
         // Invalid year
-        output.println("Bad Movie;Someone;hello;true;90;Drama;");
+        output.println("Bad domainmodel.Movie;Someone;hello;true;90;Drama;");
 
         // Missing fields
-        output.println("Broken Movie;Unknown;2000");
+        output.println("Broken domainmodel.Movie;Unknown;2000");
 
         output.close();
 

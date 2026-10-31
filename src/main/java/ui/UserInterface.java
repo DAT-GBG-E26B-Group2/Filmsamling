@@ -1,10 +1,15 @@
+package ui;
+
+import domainmodel.Controller;
+import domainmodel.Movie;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class UserInterface {
     static Controller controller = new Controller();
 
-    static void StartProgram() {
+    public static void StartProgram() {
         Scanner scanner = new Scanner(System.in);
 
         boolean running = true;
@@ -59,7 +64,7 @@ public class UserInterface {
         System.out.println("Indtast genre: ");
         String genre = scanner.nextLine();
 
-        // Next step: send the values to the Controller
+        // Next step: send the values to the domainmodel.Controller
         controller.addMovie(movieName, director, year, color, length, genre );
         System.out.println("Du har tilføjet: " + movieName + " Til databasen");
     }

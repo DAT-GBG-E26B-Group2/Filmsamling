@@ -1,3 +1,5 @@
+package domainmodel;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
@@ -145,7 +147,7 @@ public class MovieTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Movie("Future Movie", "Director", futureYear, true, 120, "Sci-fi")
+                new Movie("Future domainmodel.Movie", "Director", futureYear, true, 120, "Sci-fi")
         );
     }
 
