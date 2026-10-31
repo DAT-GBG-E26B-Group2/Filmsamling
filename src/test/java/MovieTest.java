@@ -99,4 +99,102 @@ public class MovieTest {
         // Assert
         assertEquals(26, days);
     }
+
+    //Check that movie title that is empty will throw IllegalArgumentException
+    @Test
+    void emptyTitleIsRejected() {
+        // Arrange + Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Movie("", "Steven Spielberg", 1975, true, 124, "Thriller")
+        );
+    }
+
+    //Check that year 1887 is rejected
+    @Test
+    void yearBefore1888IsRejected() {
+
+        // Arrange
+        int invalidYear = 1887;
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Movie("Jaws", "Steven Spielberg", invalidYear, true, 124, "Thriller")
+        );
+    }
+
+    //Check that year 1888 must be accpeted
+    @Test
+    void year1888IsAccepted() {
+
+        // Arrange
+        int validYear = 1888;
+
+        // Act
+        Movie movie = new Movie("Roundhay Garden Scene", "Louis Le Prince", validYear, false, 1, "Historical");
+
+        // Assert
+        assertEquals(1888, movie.getYearCreated());
+    }
+
+    //Check that  movie year that is 2 years in future is rejected (only +1 year can be accepted)
+    @Test
+    void yearTwoYearsInFutureIsRejected() {
+
+        // Arrange
+        int futureYear = LocalDate.now().getYear() + 2;
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Movie("Future Movie", "Director", futureYear, true, 120, "Sci-fi")
+        );
+    }
+
+    //Check that a movie with invalid length is rejected
+    @Test
+    void zeroLengthIsRejected() {
+
+        // Arrange
+        int invalidLength = 0;
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Movie("Jaws", "Steven Spielberg", 1975, true, invalidLength, "Thriller")
+        );
+    }
+
+    //Check that a length of a 1 minute is accepted
+    @Test
+    void oneMinuteLengthIsAccepted() {
+
+        // Arrange
+        int validLength = 1;
+
+        // Act
+        Movie movie = new Movie(
+                "Short Film", "Director", 2020, true, validLength, "Drama"
+        );
+
+        // Assert
+        assertEquals(1, movie.getLengthInMinutes());
+    }
+
+    //Check that invalid length is rejected and the original movie length is still there
+    @Test
+    void invalidLengthDoesNotChangeOriginalValue() {
+
+        // Arrange
+        Movie movie = new Movie(
+                "Jaws", "Steven Spielberg", 1975, true, 124, "Thriller"
+        );
+
+        // Act
+        assertThrows(IllegalArgumentException.class, () ->
+                movie.setLengthInMinutes(0)
+        );
+
+        // Assert
+        assertEquals(124, movie.getLengthInMinutes());
+    }
+
+
 }

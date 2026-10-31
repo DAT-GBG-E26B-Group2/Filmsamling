@@ -224,4 +224,42 @@ public class MovieCollectionTest {
         assertEquals(1, result.size());
         assertSame(godfather, result.get(0));
     }
+
+    //Check that trying to update movie with invalid values does not change the movie
+    @Test
+    void editWithInvalidValueChangesNothing() {
+
+        // Arrange
+        Movie casablanca = collection.searchMovies("Casablanca").get(0);
+
+        // Act
+        assertThrows(IllegalArgumentException.class, () ->
+                collection.editMovie(casablanca, "Casablanca 2", "Michael Curtiz", 1800, false, 102, "Drama")
+        );
+
+        // Assert
+        assertEquals("Casablanca", casablanca.getTitle());
+        assertEquals(1942, casablanca.getYearCreated());
+    }
+
+    //Check that updating the movie with valid data does update movie
+    @Test
+    void editWithValidValuesChangesMovie() {
+
+        // Arrange
+        Movie casablanca = collection.searchMovies("Casablanca").get(0);
+
+        // Act
+        boolean result = collection.editMovie(
+                casablanca, "Casablanca Remastered", "Michael Curtiz", 1942, true, 110, "Romance");
+
+        // Assert
+        assertTrue(result);
+        assertEquals("Casablanca Remastered", casablanca.getTitle());
+        assertEquals("Michael Curtiz", casablanca.getDirector());
+        assertEquals(1942, casablanca.getYearCreated());
+        assertTrue(casablanca.isInColor());
+        assertEquals(110, casablanca.getLengthInMinutes());
+        assertEquals("Romance", casablanca.getGenre());
+    }
 }

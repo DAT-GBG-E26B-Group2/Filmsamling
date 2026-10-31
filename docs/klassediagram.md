@@ -30,7 +30,7 @@ classDiagram
         +searchMovies(String searchText) ArrayList~Movie~
         +editMovie(...) boolean
         +deleteMovie(Movie movie) boolean
-        +markAsWatched(Movie movie) void
+        +markAsWatched(Movie movie, LocalDate date) void
         +getMoviesNotWatchedForDays(int days) ArrayList~Movie~
     }
 

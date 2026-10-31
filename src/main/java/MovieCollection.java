@@ -38,20 +38,25 @@ public class MovieCollection {
     }
 
     //Redigere en film hvis den er i samling samt opdatere kun de felter som er angivet
-    public boolean editMovie(Movie movie, String title, String director, int yearCreated,
-                             boolean inColor, int lengthInMinutes, String genre) {
-        if (movies.contains(movie)) {
-            movie.setTitle(title);
-            movie.setDirector(director);
-            movie.setYearCreated(yearCreated);
-            movie.setInColor(inColor);
-            movie.setLengthInMinutes(lengthInMinutes);
-            movie.setGenre(genre);
+    public boolean editMovie(Movie movie, String title, String director, int yearCreated, boolean inColor, int lengthInMinutes, String genre) {
 
-            return true;
+        // Check om film er i collectino
+        if (!movies.contains(movie)) {
+            return false;
         }
 
-        return false;
+        // Check alle ny values før man redigere film
+        new Movie(title, director, yearCreated, inColor, lengthInMinutes, genre);
+
+        // Opdatere film
+        movie.setTitle(title);
+        movie.setDirector(director);
+        movie.setYearCreated(yearCreated);
+        movie.setInColor(inColor);
+        movie.setLengthInMinutes(lengthInMinutes);
+        movie.setGenre(genre);
+
+        return true;
     }
 
     public boolean deleteMovie(Movie movie) {
