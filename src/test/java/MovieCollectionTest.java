@@ -262,4 +262,23 @@ public class MovieCollectionTest {
         assertEquals(110, casablanca.getLengthInMinutes());
         assertEquals("Romance", casablanca.getGenre());
     }
+
+    //Check that existing movie can be added to collection
+    @Test
+    void existingMovieCanBeAdded() {
+
+        // Arrange
+        Movie movie = new Movie("Jaws", "Steven Spielberg", 1975, true, 124, "Thriller");
+
+        int originalCount = collection.getNumberOfMovies();
+
+        // Act
+        collection.addMovie(movie);
+
+        // Assert
+        assertEquals(originalCount + 1,
+                collection.getNumberOfMovies());
+
+        assertTrue(collection.getMovies().contains(movie));
+    }
 }

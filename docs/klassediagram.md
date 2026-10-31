@@ -1,8 +1,6 @@
-
 # Klassediagram – Filmsamling
 
-Dette klassediagram viser klasserne i vores Filmsamling-projekt,
-deres attributter, metoder og relationer.
+Dette klassediagram viser klasserne i vores Filmsamling-projekt, deres attributter, metoder og relationer. Diagrammet er opdateret med filhåndtering fra Del 7 (US13 og US14).
 
 ```mermaid
 classDiagram
@@ -24,6 +22,8 @@ classDiagram
 
     class Controller {
         -MovieCollection movieCollection
+        -FileHandler fileHandler
+        -boolean changed
         +Controller()
         +addMovie(...) void
         +getMovies() ArrayList~Movie~
@@ -32,11 +32,15 @@ classDiagram
         +deleteMovie(Movie movie) boolean
         +markAsWatched(Movie movie, LocalDate date) void
         +getMoviesNotWatchedForDays(int days) ArrayList~Movie~
+        +loadMovies() int
+        +saveMoviesIfChanged() boolean
+        +getSkippedLineCount() int
     }
 
     class MovieCollection {
         -ArrayList~Movie~ movies
         +addMovie(...) void
+        +addMovie(Movie movie) void
         +getMovies() ArrayList~Movie~
         +getNumberOfMovies() int
         +searchMovies(String searchText) ArrayList~Movie~
@@ -53,6 +57,7 @@ classDiagram
         -int lengthInMinutes
         -String genre
         -LocalDate lastWatched
+        -int FIRST_MOVIE_YEAR
         +Movie(...)
         +getTitle() String
         +setTitle(String title) void
@@ -72,19 +77,34 @@ classDiagram
         +getDaysSinceWatched(LocalDate today) long
     }
 
+    class FileHandler {
+        -String fileName
+        -int skippedLineCount
+        -String HEADER
+        +FileHandler(String fileName)
+        +saveMovies(ArrayList~Movie~ movies) void
+        +loadMovies() ArrayList~Movie~
+        +getSkippedLineCount() int
+        -toCsvLine(Movie movie) String
+        -parseMovie(String line) Movie
+    }
+
     Main ..> UserInterface : starter
     UserInterface --> Controller : bruger
     Controller *-- MovieCollection : ejer
+    Controller *-- FileHandler : ejer
     MovieCollection "1" o-- "0..*" Movie : indeholder
+    FileHandler ..> Movie : gemmer og indlaeser
 ```
 
 ## Forklaring
 
 - **Main:** Starter programmet.
-- **UserInterface:** Viser menuen og modtager brugerens input.
-- **Controller:** Forbinder brugerfladen med filmsamlingen.
-- **MovieCollection:** Gemmer film og håndterer søgning, redigering og sletning.
-- **Movie:** Indeholder oplysninger om en film og datoen, hvor den sidst blev set.
+- **UserInterface:** Viser menuen, modtager brugerens input og skal indlæse og gemme filmsamlingen ved opstart og afslutning.
+- **Controller:** Forbinder brugerfladen med filmsamlingen og filhåndteringen. Holder styr på ændringer med `changed`.
+- **MovieCollection:** Gemmer film og håndterer søgning, redigering og sletning. Kan også tilføje et eksisterende `Movie`-objekt.
+- **Movie:** Indeholder oplysninger om en film, validerer værdier og holder styr på datoen, hvor filmen sidst blev set.
+- **FileHandler:** Gemmer film i CSV-format, indlæser dem igen og tæller ugyldige linjer.
 
 ## UML-symboler
 
@@ -92,5 +112,6 @@ classDiagram
 - `-` betyder private.
 - `~` betyder package-private.
 - `-->` viser en relation mellem klasser.
+- `..>` viser en afhængighed.
 - `*--` viser komposition.
 - `o--` viser aggregation.

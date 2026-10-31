@@ -15,6 +15,10 @@ public class MovieCollection {
         movies.add(movie);
     }
 
+    public void addMovie(Movie movie) {
+        movies.add(movie);
+    }
+
     //Returnere alle film
     public ArrayList<Movie> getMovies() {
         return movies;
