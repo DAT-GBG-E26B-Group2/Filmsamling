@@ -98,5 +98,10 @@ public class Controller {
         LocalDate limit = LocalDate.now().minusDays(days);
         return movieCollection.getMoviesNotWatchedSince(limit);
     }
-
+    public void sortMoviesByTitle() {
+        movieCollection.sortMoviesByTitle();
+    }
+    public void sortMovies(String sortBy) {
+        movieCollection.sortMovies(sortBy);
+    }
 }

@@ -1,5 +1,5 @@
 package domainmodel;
-
+import java.util.Comparator;
 import java.util.ArrayList;
 import java.time.LocalDate;
 
@@ -82,5 +82,46 @@ public class MovieCollection {
         }
 
         return result;
+    }
+    public void sortMoviesByTitle() {
+        movies.sort(Comparator.comparing(
+                Movie::getTitle,
+                String.CASE_INSENSITIVE_ORDER
+        ));
+    }
+    public void sortMovies(String sortBy) {
+        switch (sortBy) {
+            case "title" -> {
+                movies.sort(Comparator.comparing(
+                        Movie::getTitle,
+                        String.CASE_INSENSITIVE_ORDER
+                ));
+            }
+            case "director" -> {
+                movies.sort(Comparator.comparing(
+                        Movie::getDirector,
+                        String.CASE_INSENSITIVE_ORDER
+                ));
+            }
+            case "year" -> {
+                movies.sort(Comparator.comparingInt(
+                        Movie::getYearCreated
+                ));
+            }
+            case "length" -> {
+                movies.sort(Comparator.comparingInt(
+                        Movie::getLengthInMinutes
+                ));
+            }
+            case "genre" -> {
+                movies.sort(Comparator.comparing(
+                        Movie::getGenre,
+                        String.CASE_INSENSITIVE_ORDER
+                ));
+            }
+            default -> {
+                System.out.println("Ugyldig sorteringsmulighed.");
+            }
+        }
     }
 }

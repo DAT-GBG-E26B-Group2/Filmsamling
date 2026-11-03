@@ -1,8 +1,7 @@
 package ui;
-
+import java.io.FileNotFoundException;
 import domainmodel.Controller;
 import domainmodel.Movie;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,18 +9,24 @@ public class UserInterface {
     static Controller controller = new Controller();
 
     public static void StartProgram() {
+        System.out.println("Velkommen til filmsamling!");
         Scanner scanner = new Scanner(System.in);
+        try {
+            int loadedMovies = controller.loadMovies();
+            System.out.println("Indlæste " + loadedMovies + " film.");
+        } catch (FileNotFoundException e) {
+            System.out.println("Ingen eksisterende filmsamling fundet. Starter en ny.");
+        }
 
         boolean running = true;
         while(running) {
-            System.out.println("Velkommen til filmsamling!");
-
-            System.out.print("Vælg en af følgende muligheder:");
+            System.out.println("Vælg en af følgende muligheder:");
             System.out.println("1: Opret en film");
             System.out.println("2: Vis liste over alle film");
             System.out.println("3: Søg efter specifik film");
             System.out.println("4: Rediger liste over film");
             System.out.println("5: Slet en film");
+            System.out.println("6: Vis film sorteret efter... ");
             System.out.println("0: Sluk program");
 
             System.out.print("Indtast dit valg:");
@@ -34,9 +39,22 @@ public class UserInterface {
                 case "3" -> searchMovies(scanner);
                 case "4" -> editMovie(scanner);
                 case "5" -> deleteMovie(scanner);
+                case "6" -> sortMovies(scanner);
                 case "0" -> running = false;
                 default -> System.out.println("Ukendt valg: " + choice);
             }
+        }
+        try {
+            boolean saved = controller.saveMoviesIfChanged();
+
+            if (saved) {
+                System.out.println("Filmsamlingen er blevet gemt.");
+            } else {
+                System.out.println("Ingen ændringer at gemme.");
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Kunne ikke gemme filmsamlingen.");
         }
 
     }
@@ -69,8 +87,35 @@ public class UserInterface {
         System.out.println("Du har tilføjet: " + movieName + " Til databasen");
     }
 
+    private static void sortMovies(Scanner scanner) {
+        System.out.println("Hvordan vil du sortere filmene?");
+        System.out.println("1: Titel");
+        System.out.println("2: Instruktør");
+        System.out.println("3: Årstal");
+        System.out.println("4: Længde");
+        System.out.println("5: Genre");
 
+        System.out.print("Indtast dit valg: ");
+        String choice = scanner.nextLine().trim();
+
+        switch (choice){
+            case "1" -> controller.sortMovies("title");
+            case "2" -> controller.sortMovies("director");
+            case "3" -> controller.sortMovies("year");
+            case "4" -> controller.sortMovies("length");
+            case "5" -> controller.sortMovies("genre");
+            default -> {
+                System.out.println("Ugyldigt valg. Prøv igen.");
+                return;
+            }
+        }
+        displayMovies(scanner);
+    }
     private static void showAllMovies(Scanner scanner) {
+        controller.sortMoviesByTitle();
+        displayMovies(scanner);
+    }
+    private static void displayMovies(Scanner scanner) {
         ArrayList<Movie> movies = controller.getMovies();
 
         int pageSize = 9;
@@ -91,12 +136,21 @@ public class UserInterface {
             System.out.println("Side " + currentPage + " ud af " + totalPages);
 
             for (int i = startIndex; i < endIndex; i++) {
-                System.out.println((i + 1) + ": " + movies.get(i).getTitle());
+                Movie movie = movies.get(i);
+
+                System.out.println((i + 1) + ": " + movie.getTitle());
+                System.out.println("   Instruktør: " + movie.getDirector());
+                System.out.println("   Årstal: " + movie.getYearCreated());
+                System.out.println("   Farve: " + (movie.isInColor() ? "Ja" : "Nej"));
+                System.out.println("   Længde: " + movie.getLengthInMinutes() + " minutter");
+                System.out.println("   Genre: " + movie.getGenre());
+                System.out.println();
             }
 
             System.out.println("Indtast sidetal (0 for at gå tilbage):");
             int nextPage = scanner.nextInt();
             scanner.nextLine();
+
             if (nextPage == 0) {
                 return;
             }
@@ -111,15 +165,11 @@ public class UserInterface {
     private static void searchMovies(Scanner scanner) {
         System.out.println("Hvilken film leder du efter?: ");
         String search = scanner.nextLine();
-        //TILFØJ CONTAINS() FOR AT SØGE EFTER HARRY ISTEDET FOR HARRY POTTER
-        ArrayList<Movie> movies = controller.getMovies();
+        ArrayList<Movie> results = controller.searchMovies(search);
         boolean found = false;
-        for (Movie movie : movies) {
-            if (search.equalsIgnoreCase(movie.getTitle())) {
-                System.out.println(movie.getTitle());
-                found = true;
-                break;
-            }
+        for (Movie movie : results) {
+            System.out.println(movie.getTitle());
+            found = true;
         }
         if (found == false) {
             System.out.println("Filmen blev ikke fundet!");
@@ -148,40 +198,40 @@ public class UserInterface {
                     case "1" -> {
                         System.out.println("Indtast en ny titel: ");
                         String newTitle = scanner.nextLine();
-                        movie.setTitle(newTitle);
+                        controller.editMovie(movie,newTitle, movie.getDirector(), movie.getYearCreated(), movie.isInColor(), movie.getLengthInMinutes(), movie.getGenre());
                         System.out.println("Titlen er blevet ændret");
                     }
                     case "2" -> {
                         System.out.println("Indtast en ny instruktør: ");
                         String newInstruktor = scanner.nextLine();
-                        movie.setDirector(newInstruktor);
+                        controller.editMovie(movie,movie.getTitle(), newInstruktor, movie.getYearCreated(), movie.isInColor(), movie.getLengthInMinutes(), movie.getGenre());
                         System.out.println("Instruktøren er blevet ændret!");
                     }
                     case "3" -> {
                         System.out.println("Indtast nyt årstal: ");
                         int newYear = scanner.nextInt();
-                        movie.setYearCreated(newYear);
+                        controller.editMovie(movie,movie.getTitle(), movie.getDirector(), newYear, movie.isInColor(), movie.getLengthInMinutes(), movie.getGenre());
                         scanner.nextLine();
                         System.out.println("Årstallet er blevet ændret!");
                     }
                     case "4" -> {
                         System.out.println("Er filmen i farver? (True eller false): ");
                         boolean newColor = scanner.nextBoolean();
-                        movie.setInColor(newColor);
+                        controller.editMovie(movie, movie.getTitle(), movie.getDirector(), movie.getYearCreated(), newColor, movie.getLengthInMinutes(), movie.getGenre());
                         scanner.nextLine();
                         System.out.println("Farven er blevet ændret!");
                     }
                     case "5" -> {
                         System.out.println("Indtast nyt længde i minutter: ");
                         int newLength = scanner.nextInt();
-                        movie.setLengthInMinutes(newLength);
+                        controller.editMovie(movie, movie.getTitle(), movie.getDirector(), movie.getYearCreated(), movie.isInColor(), newLength, movie.getGenre());
                         scanner.nextLine();
                         System.out.println("Længden er blevet ændret!");
                     }
                     case "6" -> {
                         System.out.println("Indtast en ny genre: ");
                         String newGenre = scanner.nextLine();
-                        movie.setGenre(newGenre);
+                        controller.editMovie(movie, movie.getTitle(), movie.getDirector(), movie.getYearCreated(), movie.isInColor(), movie.getLengthInMinutes(), newGenre);
                         System.out.println("Genren er blevet ændret!");
                     }
                     case "0" -> {
@@ -199,20 +249,17 @@ public class UserInterface {
     private static void deleteMovie(Scanner scanner) {
         System.out.println("Hvilken film vil du gerne slette?: ");
         String delete = scanner.nextLine();
-        //TILFØJ CONTAINS() FOR AT SØGE EFTER HARRY ISTEDET FOR HARRY POTTER
-        ArrayList<Movie> movies = controller.getMovies();
-        boolean found = false;
-        for (int i = 0; i < movies.size(); i++) {
-            Movie movie = movies.get(i);
 
-            if (delete.equalsIgnoreCase(movie.getTitle())) {
-                movies.remove(i);
+        ArrayList<Movie> results = controller.searchMovies(delete);
+
+        if (!results.isEmpty()) {
+            Movie movie = results.get(0);
+            boolean deleted = controller.deleteMovie(movie);
+
+            if (deleted) {
                 System.out.println("Filmen er blevet slettet");
-                found = true;
-                break;
             }
-        }
-        if (found == false) {
+        } else {
             System.out.println("Filmen blev ikke fundet!");
         }
     }
