@@ -1,6 +1,6 @@
 # Klassediagram – Filmsamling
 
-Dette klassediagram viser klasserne i vores Filmsamling-projekt, deres attributter, metoder og relationer. Diagrammet er opdateret med filhåndtering fra Del 7 (US13 og US14) og package-strukturen fra Del 8 (US15).
+Dette klassediagram viser klasserne i vores Filmsamling-projekt, deres attributter, metoder og relationer.
 
 ```mermaid
 classDiagram
@@ -19,6 +19,10 @@ classDiagram
             -searchMovies(Scanner scanner) void
             -editMovie(Scanner scanner) void
             -deleteMovie(Scanner scanner) void
+            -displayMovies(Scanner scanner) void
+            -sortMovies(Scanner scanner) void
+            -markMovieAsWatched(Scanner scanner) void
+            -showMoviesNotWatchedForDays(Scanner scanner) void
         }
     }
 
@@ -38,6 +42,8 @@ classDiagram
             +loadMovies() int
             +saveMoviesIfChanged() boolean
             +getSkippedLineCount() int
+            +sortMoviesByTitle() void
+            +sortMovies(String sortBy) void
         }
 
         class MovieCollection {
@@ -50,6 +56,8 @@ classDiagram
             +editMovie(...) boolean
             +deleteMovie(Movie movie) boolean
             +getMoviesNotWatchedSince(LocalDate date) ArrayList~Movie~
+            +sortMoviesByTitle() void
+            +sortMovies(String sortBy) void
         }
 
         class Movie {
@@ -106,9 +114,9 @@ classDiagram
 ## Forklaring
 
 - **Main:** Starter programmet og ligger uden for de tre packages.
-- **UserInterface (`ui`):** Viser menuen, modtager brugerens input og håndterer indlæsning og gemning ved opstart og afslutning.
+- **UserInterface (`ui`):** Viser menuen, modtager brugerens input og håndterer indlæsning og gemning ved opstart og afslutning. Brugeren kan også sortere film, markere film som set og finde film, der ikke er set i et bestemt antal dage.
 - **Controller (`domainmodel`):** Forbinder brugerfladen med filmsamlingen og filhåndteringen. Holder styr på ændringer med `changed`.
-- **MovieCollection (`domainmodel`):** Gemmer film og håndterer søgning, redigering og sletning. Kan også tilføje et eksisterende `Movie`-objekt.
+- **MovieCollection (`domainmodel`):** Gemmer film og håndterer søgning, redigering, sletning, sortering og filtrering efter sidste visningsdato. Kan også tilføje et eksisterende `Movie`-objekt.
 - **Movie (`domainmodel`):** Indeholder oplysninger om en film, validerer værdier og holder styr på datoen, hvor filmen sidst blev set.
 - **FileHandler (`datasource`):** Gemmer film i CSV-format, indlæser dem igen og tæller ugyldige linjer.
 

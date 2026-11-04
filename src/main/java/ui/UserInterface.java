@@ -4,6 +4,7 @@ import domainmodel.Controller;
 import domainmodel.Movie;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class UserInterface {
     static Controller controller = new Controller();
@@ -24,9 +25,11 @@ public class UserInterface {
             System.out.println("1: Opret en film");
             System.out.println("2: Vis liste over alle film");
             System.out.println("3: Søg efter specifik film");
-            System.out.println("4: Rediger liste over film");
+            System.out.println("4: Rediger film");
             System.out.println("5: Slet en film");
-            System.out.println("6: Vis film sorteret efter... ");
+            System.out.println("6: Markér en film som set");
+            System.out.println("7: Vis film, der ikke er set i X dage");
+            System.out.println("8: Vis film sorteret efter...");
             System.out.println("0: Sluk program");
 
             System.out.print("Indtast dit valg:");
@@ -39,7 +42,9 @@ public class UserInterface {
                 case "3" -> searchMovies(scanner);
                 case "4" -> editMovie(scanner);
                 case "5" -> deleteMovie(scanner);
-                case "6" -> sortMovies(scanner);
+                case "6" -> markMovieAsWatched(scanner);
+                case "7" -> showMoviesNotWatchedForDays(scanner);
+                case "8" -> sortMovies(scanner);
                 case "0" -> running = false;
                 default -> System.out.println("Ukendt valg: " + choice);
             }
@@ -261,6 +266,104 @@ public class UserInterface {
             }
         } else {
             System.out.println("Filmen blev ikke fundet!");
+        }
+    }
+
+    private static void markMovieAsWatched(Scanner scanner) {
+        System.out.println("Indtast titlen på filmen, du har set:");
+        String title = scanner.nextLine().trim();
+
+        ArrayList<Movie> results = controller.searchMovies(title);
+
+        Movie selectedMovie = null;
+
+        for (Movie movie : results) {
+            if (movie.getTitle().equalsIgnoreCase(title)) {
+                selectedMovie = movie;
+                break;
+            }
+        }
+
+        if (selectedMovie == null) {
+            System.out.println("Filmen blev ikke fundet!");
+            return;
+        }
+
+        System.out.println("Hvornår så du filmen?");
+        System.out.println("1: I dag");
+        System.out.println("2: En tidligere dato");
+        System.out.print("Indtast dit valg: ");
+
+        String choice = scanner.nextLine().trim();
+        LocalDate date;
+
+        switch (choice) {
+            case "1" -> date = LocalDate.now();
+
+            case "2" -> {
+                System.out.println("Indtast dato (ÅÅÅÅ-MM-DD):");
+                String dateInput = scanner.nextLine().trim();
+
+                try {
+                    date = LocalDate.parse(dateInput);
+                } catch (java.time.format.DateTimeParseException e) {
+                    System.out.println("Ugyldig dato. Brug formatet ÅÅÅÅ-MM-DD.");
+                    return;
+                }
+            }
+
+            default -> {
+                System.out.println("Ugyldigt valg.");
+                return;
+            }
+        }
+
+        try {
+            controller.markAsWatched(selectedMovie, date);
+
+            System.out.println("Filmen '" + selectedMovie.getTitle() + "' er markeret som set den " + date);
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ugyldig dato: " + e.getMessage());
+        }
+    }
+
+    private static void showMoviesNotWatchedForDays(Scanner scanner) {
+        System.out.println("Hvor mange dage må der være gået?");
+        String input = scanner.nextLine().trim();
+
+        int days;
+
+        try {
+            days = Integer.parseInt(input);
+
+            if (days < 0) {
+                System.out.println("Antal dage må ikke være negativt.");
+                return;
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Du skal indtaste et gyldigt heltal.");
+            return;
+        }
+
+        ArrayList<Movie> movies = controller.getMoviesNotWatchedForDays(days);
+
+        if (movies.isEmpty()) {
+            System.out.println("Ingen film fundet.");
+            return;
+        }
+
+        System.out.println("Film, der ikke er set i mindst " + days + " dage:");
+
+        for (Movie movie : movies) {
+            System.out.println("- " + movie.getTitle());
+
+            if (movie.hasBeenWatched()) {
+                System.out.println("  Sidst set: " + movie.getLastWatched());
+            } else {
+                System.out.println("  Aldrig set");
+            }
         }
     }
 
