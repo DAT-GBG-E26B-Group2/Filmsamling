@@ -13,11 +13,10 @@ Et Java CRUD-program til en filmsamling – 1. semester, datamatiker, EK.
 
 ## Sådan køres programmet
 
-1. Klon GitHub-repositoriet, og åbn projektet i IntelliJ IDEA.
-2. Sørg for, at **JDK 25** er installeret og valgt under Project SDK.
-3. Åbn `src/main/java/Main.java`.
-4. Kør `Main.main()` ved at trykke på den grønne Run-knap.
-5. Følg menuen i konsollen.
+1. Klon GitHub-repositoriet og åbn projektet i IntelliJ IDEA.
+2. Åbn `src/main/java/Main.java`.
+3. Kør `Main.main()` ved at trykke på den grønne Run-knap.
+4. Følg menuen i konsollen.
 
 **Main-klasse:** `Main`  
 **Java-version:** JDK 25  
@@ -37,8 +36,6 @@ Et Java CRUD-program til en filmsamling – 1. semester, datamatiker, EK.
 ## Tests
 
 Projektet bruger JUnit 5.14.4 til automatiserede tests.
-
-Kør testene i IntelliJ eller via terminalen:
 
 
 ## Git og dokumentation
